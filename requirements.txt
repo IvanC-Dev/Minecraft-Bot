@@ -1,2 +1,5 @@
 discord.py
 python-dotenv
+mcstatus
+rcon
+psutil
