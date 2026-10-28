@@ -10,6 +10,7 @@ import asyncio
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD = discord.Object(id=int(os.getenv("GUILD")))
+OWNER_ID = int(os.getenv("OWNER_ID"))
 
 mc_server = JavaServer(os.getenv("MC_HOST"), int(os.getenv("MC_PORT")))
 
