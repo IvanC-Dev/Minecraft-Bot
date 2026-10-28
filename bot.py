@@ -23,6 +23,19 @@ async def run(*cmd):
     proc = await asyncio.create_subprocess_exec(*cmd)
     return await proc.wait()
 
+async def run_capture(*cmd, timeout=30):
+    proc = await asyncio.create_subprocess_exec(
+        *cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.STDOUT,
+    )
+    try:
+        out, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+    except asyncio.TimeoutError:
+        proc.kill()
+        await proc.wait()
+        raise
+    return proc.returncode, out.decode(errors="replace")
 
 async def server_online():
     try:
