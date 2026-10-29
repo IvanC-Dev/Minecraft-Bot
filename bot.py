@@ -9,7 +9,9 @@ import asyncio
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
-GUILD = discord.Object(id=int(os.getenv("GUILD")))
+
+GUILDS = (discord.Object(id=int(g)) for g in os.getenv("GUILDS").split(","))
+
 OWNER_ID = int(os.getenv("OWNER_ID"))
 
 mc_server = JavaServer(os.getenv("MC_HOST"), int(os.getenv("MC_PORT")))
@@ -53,14 +55,14 @@ async def on_message(message):
 
 @bot.event
 async def on_ready():
-    await bot.tree.sync(guild=GUILD)
+    await bot.tree.sync(guild=GUILDS)
     print(f"Logged in as {bot.user}")
 
-@bot.tree.command(name="ping", description="Check if the bot is alive", guild=GUILD)
+@bot.tree.command(name="ping", description="Check if the bot is alive", guild=GUILDS)
 async def ping(interaction: discord.Interaction):
     await interaction.response.send_message("pong")
 
-@bot.tree.command(name="status", description="check server status", guild=GUILD)
+@bot.tree.command(name="status", description="check server status", guild=GUILDS)
 async def status(interaction: discord.Interaction):
     await interaction.response.defer()
     try:
@@ -70,7 +72,7 @@ async def status(interaction: discord.Interaction):
         return
     await interaction.followup.send(f"There are {s.players.online}/{s.players.max} online, with a server latency of {s.latency}ms")
 
-@bot.tree.command(name="run", description="Run a command", guild=GUILD)
+@bot.tree.command(name="run", description="Run a command", guild=GUILDS)
 @app_commands.describe(command="The command to run, e.g. sudo dnf install -y htop")
 async def runCommand(interaction: discord.Interaction, command: str):
     if interaction.user.id != OWNER_ID:
@@ -95,7 +97,7 @@ async def runCommand(interaction: discord.Interaction, command: str):
     await interaction.followup.send(f"```\n$ {command}\n{text}\n```exit code: {code}", ephemeral=True)
 
 
-@bot.tree.command(name="start", description="Start the server", guild=GUILD)
+@bot.tree.command(name="start", description="Start the server", guild=GUILDS)
 async def start(interaction: discord.Interaction):
     await interaction.response.defer()
 
@@ -120,7 +122,7 @@ async def start(interaction: discord.Interaction):
     await interaction.followup.send("Server still isn't responding after 5 min, check the logs")
         
     
-@bot.tree.command(name="stop", description="Stop the server", guild=GUILD)
+@bot.tree.command(name="stop", description="Stop the server", guild=GUILDS)
 async def stop(interaction: discord.Interaction):
     await interaction.response.defer()          # saving the world can take a bit
  
